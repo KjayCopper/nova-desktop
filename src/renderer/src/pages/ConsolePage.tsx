@@ -272,7 +272,7 @@ function QuickKeyRack({ playout }: { playout: PlayoutController }) {
           const active = activeQuickKeyId === pad.id
           const progress = active ? progressOf(cartElapsedMs, pad.duration) : 0
           return (
-            <button key={pad.id} type="button" className={`quickkey type-${pad.type}`} data-active={active} onClick={() => triggerQuickKey(pad)} title={`${pad.label} — ${pad.detail} (${pad.duration}s)`}>
+            <button key={pad.id} type="button" className={`quickkey type-${pad.type}`} data-active={active} onClick={() => triggerQuickKey(pad)} onContextMenu={(e) => { e.preventDefault(); if (active) stopCart() }} title={`${pad.label} – ${pad.detail} (${pad.duration}s)`}>
               {active ? <span className="qk-progress" style={{ width: `${progress * 100}%` }} /> : null}
               <span className="qk-top"><span className="qk-id mono">{pad.id}</span><span className="qk-duration mono">{pad.duration}s</span></span>
               <span className="qk-label">{pad.label}</span>
