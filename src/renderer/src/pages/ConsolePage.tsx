@@ -102,13 +102,6 @@ function PlayerA({ playout }: { playout: PlayoutController }) {
         </div>
       </div>
       <Waveform seed={current?.title ?? 'nova'} progress={progress} live={transport === 'playing'} />
-      <div className="deck-tags">
-        {current ? <TypeBadge type={current.type} /> : null}
-        <span className="deck-tag">{current?.category ?? '—'}</span>
-        <span className="deck-tag">Intro {current?.intro ?? 0}s</span>
-        <span className="deck-tag">Extro {current?.extro ?? 0}s</span>
-        {current?.bpm ? <span className="deck-tag">{current.bpm} BPM</span> : null}
-      </div>
       <div className="deck-controls">
         <DeckButton label={transport === 'playing' ? 'Pause' : 'Play'} onClick={toggleTransport} active={transport === 'playing'}>
           {transport === 'playing' ? <Pause size={18} /> : <Play size={18} />}
