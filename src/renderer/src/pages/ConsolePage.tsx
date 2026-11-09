@@ -380,19 +380,21 @@ function MicrophonePanel() {
   const [duck, setDuck] = useState(true)
   const [duckDb, setDuckDb] = useState(-6)
   return (
-    <section className="microphone-panel microphone-panel-horizontal">
+    <section className="microphone-panel microphone-panel-vertical">
+      <div className="mic-top">
+        <label className="mic-duck">
+          <input type="checkbox" checked={duck} onChange={(e) => setDuck(e.target.checked)} disabled={!live} />
+          <span>Duck music</span>
+        </label>
+        <div className="mic-slider">
+          <input type="range" min={-20} max={0} step={1} value={duckDb} onChange={(e) => setDuckDb(Number(e.target.value))} disabled={!live || !duck} />
+          <span className="mono">{duckDb} dB</span>
+        </div>
+      </div>
       <button type="button" className={`mic-btn mic-btn-big ${live ? 'is-live' : ''}`} onClick={() => setLive((v) => !v)} aria-pressed={live}>
         {live ? <Mic size={20} /> : <MicOff size={20} />}
         {live ? 'Mic live' : 'Mic off'}
       </button>
-      <label className="mic-duck">
-        <input type="checkbox" checked={duck} onChange={(e) => setDuck(e.target.checked)} disabled={!live} />
-        <span>Duck music</span>
-      </label>
-      <div className="mic-slider">
-        <input type="range" min={-20} max={0} step={1} value={duckDb} onChange={(e) => setDuckDb(Number(e.target.value))} disabled={!live || !duck} />
-        <span className="mono">{duckDb} dB</span>
-      </div>
     </section>
   )
 }
