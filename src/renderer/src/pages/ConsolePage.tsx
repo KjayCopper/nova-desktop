@@ -157,8 +157,7 @@ function MiniDeck({ name, tag, item, detail, state, progress, onPlay, onStop, on
 }
 
 function PlayerRack({ playout }: { playout: PlayoutController }) {
-  const { currentIndex, next, cart, cartElapsedMs, preview, previewElapsedMs } = playout
-  const previewProgress = progressOf(previewElapsedMs, preview?.item.duration ?? 0)
+  const { currentIndex, next, cart, cartElapsedMs } = playout
   return (
     <div className="player-rack player-rack-horizontal">
       <PlayerA playout={playout} />
@@ -174,7 +173,15 @@ function PlayerRack({ playout }: { playout: PlayoutController }) {
       />
       <MiniDeck
         name="Player 3"
-        tag="Cart"
+        tag="Idle"
+        item={null}
+        state="idle"
+        progress={0}
+        emptyLabel="Not in use"
+      />
+      <MiniDeck
+        name="Player 4"
+        tag="Quick key"
         item={cart?.item ?? null}
         state={cart ? 'playing' : 'idle'}
         progress={cart ? progressOf(cartElapsedMs, cart.item.duration) : 0}
@@ -183,20 +190,6 @@ function PlayerRack({ playout }: { playout: PlayoutController }) {
         detail={cart ? `${cart.item.artist}` : undefined}
       >
         {cart ? <span className="mini-badge">CART</span> : null}
-      </MiniDeck>
-      <MiniDeck
-        name="Player 4"
-        tag="Preview"
-        item={preview?.item ?? null}
-        state={preview ? (preview.startedAt ? 'playing' : 'cued') : 'idle'}
-        progress={previewProgress}
-        emptyLabel="Cue from the library"
-        onPlay={preview ? (preview.startedAt ? playout.stopPreview : playout.playPreview) : undefined}
-        onStop={preview?.startedAt ? playout.stopPreview : undefined}
-        onClear={preview ? playout.clearPreview : undefined}
-        detail={preview ? `${preview.item.artist}${preview.startedAt ? '' : ' · ready'}` : undefined}
-      >
-        {preview && !preview.startedAt ? <span className="mini-badge">CUE</span> : null}
       </MiniDeck>
     </div>
   )
