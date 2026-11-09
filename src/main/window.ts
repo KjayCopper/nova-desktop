@@ -13,17 +13,17 @@ export interface WindowState {
 }
 
 export const DEFAULT_WINDOW_STATE: WindowState = {
-  width: 1240,
-  height: 820,
+  width: 1440,
+  height: 900,
   maximized: false
 }
 
-export const TITLEBAR_HEIGHT = 44
+export const TITLEBAR_HEIGHT = 48
 
-const DARK_BACKGROUND = '#0a0c11'
-const LIGHT_BACKGROUND = '#f5f7fb'
-const DARK_SYMBOLS = '#aab3c5'
-const LIGHT_SYMBOLS = '#3a4256'
+const DARK_BACKGROUND = '#090d13'
+const LIGHT_BACKGROUND = '#eef1f5'
+const DARK_SYMBOLS = '#9aa7bb'
+const LIGHT_SYMBOLS = '#435066'
 
 let mainWindow: BrowserWindow | null = null
 let saveTimer: NodeJS.Timeout | undefined
@@ -37,8 +37,8 @@ export function normalizeWindowState(raw: unknown, fallback: WindowState): Windo
     return Math.min(max, Math.max(min, Math.round(value)))
   }
   return {
-    width: num(input.width, 980, 6000, fallback.width),
-    height: num(input.height, 640, 4000, fallback.height),
+    width: num(input.width, 1080, 6000, fallback.width),
+    height: num(input.height, 680, 4000, fallback.height),
     x: typeof input.x === 'number' && Number.isFinite(input.x) ? Math.round(input.x) : undefined,
     y: typeof input.y === 'number' && Number.isFinite(input.y) ? Math.round(input.y) : undefined,
     maximized: input.maximized === true
@@ -88,10 +88,10 @@ export function createMainWindow(options: {
 
   const win = new BrowserWindow({
     ...resolveBounds(stored),
-    minWidth: 980,
-    minHeight: 640,
+    minWidth: 1080,
+    minHeight: 680,
     show: false,
-    title: 'Nova',
+    title: 'Nova FM',
     backgroundColor: dark ? DARK_BACKGROUND : LIGHT_BACKGROUND,
     icon: join(__dirname, '../../build/icon.png'),
     titleBarStyle: isMac ? 'hiddenInset' : 'hidden',

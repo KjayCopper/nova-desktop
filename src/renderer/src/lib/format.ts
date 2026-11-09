@@ -39,6 +39,42 @@ export function formatDateTime(iso: string): string {
   return `${date.toLocaleDateString()} ${date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}`
 }
 
+/** Wall-clock time from an epoch value, e.g. 21:04:12. */
+export function formatClock(epochMs: number, withSeconds = true): string {
+  const date = new Date(epochMs)
+  if (Number.isNaN(date.getTime())) return '--:--:--'
+  return date.toLocaleTimeString(undefined, {
+    hour12: false,
+    hour: '2-digit',
+    minute: '2-digit',
+    ...(withSeconds ? { second: '2-digit' } : {})
+  })
+}
+
+/** Media duration from seconds, e.g. 3:42 or 1:02:09. */
+export function formatDuration(seconds: number): string {
+  const safe = Math.max(0, Math.round(seconds))
+  const hours = Math.floor(safe / 3600)
+  const minutes = Math.floor((safe % 3600) / 60)
+  const rest = safe % 60
+  if (hours > 0) return `${hours}:${String(minutes).padStart(2, '0')}:${String(rest).padStart(2, '0')}`
+  return `${minutes}:${String(rest).padStart(2, '0')}`
+}
+
+/** Media duration from milliseconds, without the leading zero on minutes. */
+export function formatMediaMs(milliseconds: number): string {
+  return formatDuration(Math.max(0, milliseconds) / 1000)
+}
+
+export function formatDateLong(date = new Date()): string {
+  return date.toLocaleDateString(undefined, {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  })
+}
+
 export function formatUptime(milliseconds: number): string {
   if (!Number.isFinite(milliseconds) || milliseconds < 0) return '0m'
   const totalMinutes = Math.floor(milliseconds / 60_000)

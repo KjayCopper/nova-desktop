@@ -1,20 +1,25 @@
-# Nova
+# Nova FM
 
-A modern, self-updating Windows desktop starter built with **Electron + React + TypeScript**.
-It ships with a polished light/dark UI, typed IPC, persisted preferences, window-state restore,
-live logs, and a complete **GitHub Releases auto-update pipeline** via `electron-updater`.
-
-Use it as the shell for your own product: replace the pages, keep the update machinery.
+A broadcast playout console for Windows built with **Electron + React + TypeScript**.
+It pairs a dense PlayoutOne-style studio UI — running order, player rack, quick-key carts and a
+searchable media library — with a complete **GitHub Releases auto-update pipeline** via
+`electron-updater`. Transport and audio are simulated in this build; the update machinery,
+security hardening, settings and diagnostics are production ready.
 
 <p align="center">
-  <img src="docs/screenshot-overview.png" alt="Overview" width="49%" />
-  <img src="docs/screenshot-update.png" alt="Update ready to install" width="49%" />
+  <img src="docs/screenshot-overview.png" alt="Nova FM playout console" width="49%" />
+  <img src="docs/screenshot-update.png" alt="Update available" width="49%" />
 </p>
 
 ---
 
 ## Highlights
 
+- **Playout console** — rolling running order, Player A on-air deck with waveform and timecodes,
+  Player B next-up, Player C cart, Player D library preview, and a 24-key quick-key rack.
+- **Media library** — search, category filters, sorting, add-to-log and cue-to-Player-D.
+- **Simulated transport** — clock-driven playhead, play/pause/stop/restart/next, AutoDJ roll-over
+  and live cart playback. No audio device is required.
 - **Real auto-updates** — background checks, download progress, restart-to-install, release notes,
   stable/beta channels, desktop notification when an update is ready.
 - **Update simulator** — click through the entire update UX in development before publishing anything.
@@ -71,9 +76,11 @@ src/
   preload/         contextBridge API (window.api)
   shared/          types, IPC channel names, defaults/normalization
   renderer/        React UI
-    src/pages/     Overview, Updates, Activity, Settings, About
-    src/components/ design-system components
-    src/styles.css  the full design system (no CSS framework)
+    src/pages/     Console, Library, Updates, Activity, Settings, About
+    src/hooks/     desktop bridge, simulated playout engine, timers, toasts
+    src/lib/       routes, actions, formatting, playout data, theme
+    src/components/ design-system components and shell
+    src/styles.css  the full console design system (no CSS framework)
 scripts/
   make-icons.mjs   dependency-free PNG/ICO generator
 build/             generated app icon (icon.png, icon.ico)
@@ -94,6 +101,26 @@ electron.vite.config.ts
 | `npm run dist:dir` | Unpacked Windows app |
 | `npm run dist` | NSIS installer |
 | `npm run release` | Build and publish to GitHub (`GH_TOKEN` required) |
+
+---
+
+## The console
+
+| Area | What it does |
+| --- | --- |
+| Toolbar | Load hour, export the running order, AutoDJ toggle, voice-track/segue placeholders |
+| Playlist | Rolling log with start/end times, type badges, live row progress, filter, jump-to-item |
+| Player A | On-air deck: waveform, elapsed/remaining timecodes, play/pause/stop/restart/next |
+| Player B | Next item, with its scheduled start time |
+| Player C | Cart deck driven by any of the 24 quick keys |
+| Player D | Library preview deck (cue, play, stop, clear) |
+| Quick keys | 2×12 cart wall (jingle, ad, news, sweeper, promo, command) |
+| Status bar | On-air state, AutoDJ, next item, playlist position |
+
+The engine in `src/renderer/src/hooks/usePlayout.ts` advances a clock-driven playhead over
+`src/renderer/src/lib/playout-data.ts`. AutoDJ wraps to the start of the log when the hour ends;
+with AutoDJ off the transport stops at the final item. Everything is simulated — no audio files or
+output devices are involved.
 
 ---
 
@@ -128,7 +155,7 @@ $env:NOVA_UPDATE_SIM = "1"
 .\release\win-unpacked\Nova.exe
 ```
 
-The sidebar shows a `SIM` badge whenever the simulator is active.
+The Updates page shows **Simulator (development)** as the engine mode whenever the simulator is active.
 
 ---
 
@@ -136,18 +163,18 @@ The sidebar shows a `SIM` badge whenever the simulator is active.
 
 ### 1. Point the app at your repository
 
-Replace the placeholders in **`electron-builder.yml`**:
+The app is already configured for **`KjayCopper/nova-desktop`**:
 
 ```yaml
 publish:
   provider: github
-  owner: your-github-username   # ← your GitHub user or org
-  repo: nova-desktop            # ← your repository name
+  owner: KjayCopper
+  repo: nova-desktop
   releaseType: release
 ```
 
-Also update the link on the About page in
-**`src/renderer/src/pages/AboutPage.tsx`** (`REPO_URL`).
+To use a different repository, update **`electron-builder.yml`** and the `REPO_URL` link in
+**`src/renderer/src/pages/AboutPage.tsx`**, then rebuild.
 
 > `app-update.yml` is generated inside the packaged app from this config. Changing the repository
 > requires rebuilding the app.
@@ -256,14 +283,15 @@ with its own policy.
 
 ## Renaming the app
 
-The starter is branded **Nova**. To rename it, update these places:
+The UI is branded **Nova FM**; the Electron package and installer stay **Nova**. To rename both, update these places:
 
 | What | Where |
 | --- | --- |
 | Package + product name | `package.json` (`name`, `productName`) |
 | App ID (Windows notifications/taskbar) | `electron-builder.yml` (`appId`) and `APP_ID` in `src/main/index.ts` |
-| Window title | `title: 'Nova'` in `src/main/window.ts` |
-| UI brand text | `src/renderer/src/components/Sidebar.tsx`, `Logo.tsx` (`aria-label`), pages' copy |
+| Window title | `title: 'Nova FM'` in `src/main/window.ts` |
+| UI brand text | `src/renderer/src/components/TopBar.tsx`, `Logo.tsx` (`aria-label`), pages' copy |
+| Station name / library | `src/renderer/src/lib/playout-data.ts` (`STATION_NAME`, tracks, quick keys) |
 | HTML title | `src/renderer/index.html` |
 | Icons | `scripts/make-icons.mjs`, then `npm run icons` |
 | Repository links | `electron-builder.yml` publish block, `AboutPage.tsx` |

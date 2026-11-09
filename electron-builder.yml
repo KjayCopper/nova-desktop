@@ -47,6 +47,6 @@ nsis:
 # The same values must be used by electron-updater at runtime (baked into app-update.yml).
 publish:
   provider: github
-  owner: your-github-username
+  owner: KjayCopper
   repo: nova-desktop
   releaseType: release

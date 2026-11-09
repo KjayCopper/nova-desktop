@@ -1,24 +1,25 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { AppSettings, ThemeMode } from '../../shared/types'
 import { Logo } from './components/Logo'
-import { Sidebar } from './components/Sidebar'
 import { Toasts } from './components/Toasts'
 import { TopBar } from './components/TopBar'
 import { useDesktop } from './hooks/useDesktop'
+import { usePlayout } from './hooks/usePlayout'
 import { useToasts } from './hooks/useToasts'
-import type { AppActions } from './lib/actions'
+import type { AppActions, NotifyTone } from './lib/actions'
 import { errorMessage } from './lib/format'
 import { isRoute, ROUTE_META, type Route } from './lib/routes'
 import { watchTheme } from './lib/theme'
 import { AboutPage } from './pages/AboutPage'
+import { ConsolePage } from './pages/ConsolePage'
+import { LibraryPage } from './pages/LibraryPage'
 import { LogsPage } from './pages/LogsPage'
-import { OverviewPage } from './pages/OverviewPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { UpdatesPage } from './pages/UpdatesPage'
 
 function readInitialRoute(): Route {
   const saved = localStorage.getItem('nova.route')
-  return isRoute(saved) ? saved : 'overview'
+  return isRoute(saved) ? saved : 'console'
 }
 
 function Splash({ message }: { message: string }) {
@@ -67,6 +68,7 @@ function ErrorScreen({ message }: { message: string }) {
 
 export default function App() {
   const desktop = useDesktop()
+  const playout = usePlayout()
   const { toasts, push, dismiss } = useToasts()
   const [route, setRoute] = useState<Route>(readInitialRoute)
   const previousPhase = useRef(desktop.update.phase)
@@ -87,7 +89,7 @@ export default function App() {
 
   useEffect(() => {
     localStorage.setItem('nova.route', route)
-    document.title = `Nova · ${ROUTE_META[route].title}`
+    document.title = `Nova FM · ${ROUTE_META[route].title}`
   }, [route])
 
   useEffect(() => {
@@ -188,7 +190,7 @@ export default function App() {
   }
 
   if (!desktop.ready || !system) {
-    return <Splash message="Starting Nova…" />
+    return <Splash message="Starting Nova FM…" />
   }
 
   const actions: AppActions = {
@@ -221,36 +223,34 @@ export default function App() {
           push({ tone: 'error', title: 'Copy failed', message: errorMessage(error) })
         })
     },
+    notify: (title: string, message?: string, tone: NotifyTone = 'info') => {
+      push({ tone, title, message })
+    },
     quit: () => {
       void window.api.app.quit()
     }
   }
 
+  const fullBleed = route === 'console' || route === 'library'
+
   return (
     <div className={`app-shell platform-${system.platform}`}>
-      <Sidebar route={route} update={update} onNavigate={actions.navigate} />
+      <TopBar
+        route={route}
+        update={update}
+        theme={settings.theme}
+        playout={playout}
+        onNavigate={actions.navigate}
+        onCycleTheme={cycleTheme}
+      />
 
-      <div className="main">
-        <TopBar
-          route={route}
-          update={update}
-          theme={settings.theme}
-          onOpenUpdates={() => actions.navigate('updates')}
-          onCycleTheme={cycleTheme}
-        />
+      <main className="content" data-route={route} key={route}>
+        {route === 'console' ? <ConsolePage playout={playout} actions={actions} /> : null}
 
-        <main className="content" key={route}>
+        {route === 'library' ? <LibraryPage playout={playout} actions={actions} /> : null}
+
+        {!fullBleed ? (
           <div className="content-inner">
-            {route === 'overview' ? (
-              <OverviewPage
-                system={system}
-                update={update}
-                settings={settings}
-                logs={logs}
-                actions={actions}
-              />
-            ) : null}
-
             {route === 'updates' ? (
               <UpdatesPage update={update} settings={settings} actions={actions} />
             ) : null}
@@ -265,8 +265,8 @@ export default function App() {
               <AboutPage system={system} update={update} actions={actions} />
             ) : null}
           </div>
-        </main>
-      </div>
+        ) : null}
+      </main>
 
       <Toasts toasts={toasts} onDismiss={dismiss} />
     </div>

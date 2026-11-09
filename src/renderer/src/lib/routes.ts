@@ -1,19 +1,30 @@
-export const ROUTES = ['overview', 'updates', 'logs', 'settings', 'about'] as const
+export const ROUTES = [
+  'console',
+  'library',
+  'updates',
+  'logs',
+  'settings',
+  'about'
+] as const
 
 export type Route = (typeof ROUTES)[number]
 
 export const ROUTE_META: Record<Route, { title: string; subtitle: string }> = {
-  overview: {
-    title: 'Overview',
-    subtitle: 'Runtime health and release status at a glance.'
+  console: {
+    title: 'Console',
+    subtitle: 'Live playlist, players and quick keys.'
+  },
+  library: {
+    title: 'Library',
+    subtitle: 'Search, cue and schedule media.'
   },
   updates: {
     title: 'Updates',
-    subtitle: 'Signed releases delivered through GitHub.'
+    subtitle: 'Releases delivered through GitHub.'
   },
   logs: {
     title: 'Activity',
-    subtitle: 'Live diagnostics streamed from the main process.'
+    subtitle: 'Live diagnostics from the playout engine.'
   },
   settings: {
     title: 'Settings',

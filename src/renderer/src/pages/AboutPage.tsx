@@ -13,7 +13,7 @@ import { PageHeader } from '../components/PageHeader'
 import type { AppActions } from '../lib/actions'
 import { formatRelative, platformLabel } from '../lib/format'
 
-const REPO_URL = 'https://github.com/your-github-username/nova-desktop'
+const REPO_URL = 'https://github.com/KjayCopper/nova-desktop'
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
@@ -40,11 +40,11 @@ export function AboutPage({
       <section className="about-hero card">
         <Logo size={62} />
         <div className="about-copy">
-          <h2>Nova</h2>
+          <h2>Nova FM</h2>
           <p>
-            A modern, self-updating desktop application built with Electron, React and
-            TypeScript. Releases are signed, published to GitHub, and delivered in the
-            background.
+            A broadcast playout console built with Electron, React and TypeScript. Drive the
+            playlist, players and quick-key carts, cue media from the library, and keep the
+            station on air — while signed releases update themselves in the background.
           </p>
           <div className="chips">
             <span className="chip">v{system.version}</span>
@@ -117,8 +117,8 @@ export function AboutPage({
           </button>
         </div>
         <p className="fine-print">
-          Update the repository URL in <code>src/renderer/src/pages/AboutPage.tsx</code> and the
-          publisher settings in <code>electron-builder.yml</code> before shipping.
+          Releases are published from <code>KjayCopper/nova-desktop</code> by the tag-triggered
+          GitHub Actions workflow.
         </p>
       </Card>
 
