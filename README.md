@@ -61,10 +61,13 @@ npm run dist:dir   # unpacked app only → release/win-unpacked/Nova.exe
 
 ### Install location
 
-The NSIS installer defaults to **`D:\Nova`** instead of `%LOCALAPPDATA%\Programs\Nova`, so the
-app does not land on the system drive. The assisted installer still shows the directory page,
-so the folder can be changed during setup. Auto-updates reuse the folder recorded at install
-time (see `build/installer.nsh`).
+The NSIS installer defaults to **`D:\Nova`** when that drive exists, but the directory page is
+always shown, so the folder can be changed during setup. Auto-updates reuse the folder recorded
+at install time (see `build/installer.nsh`).
+
+All persistent data (settings, window state, logs, caches, update downloads) is stored in
+`<installDir>\data`, so the install stays self-contained — nothing is written to `%APPDATA%` or
+`%LOCALAPPDATA%`. Uninstalling removes the whole folder.
 
 ---
 

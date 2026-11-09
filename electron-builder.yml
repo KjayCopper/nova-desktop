@@ -36,8 +36,7 @@ nsis:
   perMachine: false
   allowElevation: true
   allowToChangeInstallationDirectory: true
-  # Seeds the default install folder as D:\Nova (see build/installer.nsh) so a
-  # click-through install never lands on the system drive.
+  # Custom hooks: default to D:\Nova and preserve data\ on updates.
   include: installer.nsh
   createDesktopShortcut: always
   createStartMenuShortcut: true

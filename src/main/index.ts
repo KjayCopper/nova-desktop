@@ -5,6 +5,7 @@ import { DEFAULT_SETTINGS, normalizeSettings } from '../shared/settings'
 import type { AppSettings, SystemInfo } from '../shared/types'
 import { registerIpc } from './ipc'
 import { Logger, isBrokenPipeError } from './logger'
+import { configurePaths } from './paths'
 import { hardenNavigation, hardenSession } from './security'
 import { JsonStore } from './store'
 import { UpdaterService } from './updater'
@@ -26,6 +27,8 @@ let logger: Logger | null = null
 let settingsStore: JsonStore<AppSettings> | null = null
 let windowStateStore: JsonStore<WindowState> | null = null
 let updater: UpdaterService | null = null
+
+configurePaths()
 
 const hasInstanceLock = app.requestSingleInstanceLock()
 

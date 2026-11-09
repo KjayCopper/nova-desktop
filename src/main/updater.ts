@@ -1,4 +1,6 @@
 import { app, Notification } from 'electron'
+import { mkdirSync } from 'node:fs'
+import { join } from 'node:path'
 import { autoUpdater, type ProgressInfo, type UpdateInfo } from 'electron-updater'
 import type { AppSettings, UpdateChannel, UpdateState } from '../shared/types'
 import type { Logger } from './logger'
@@ -185,6 +187,19 @@ export class UpdaterService {
       warn: (message?: unknown) => this.deps.log.warn('updater:lib', String(message ?? '')),
       error: (message?: unknown) => this.deps.log.error('updater:lib', String(message ?? '')),
       debug: (message?: unknown) => this.deps.log.debug('updater:lib', String(message ?? ''))
+    }
+
+    // Keep update downloads inside the app's own data folder instead of
+    // %LOCALAPPDATA%, so nothing is left on the system drive.
+    try {
+      const cacheBase = join(app.getPath('userData'), 'updates')
+      mkdirSync(cacheBase, { recursive: true })
+      Object.defineProperty((autoUpdater as unknown as { app: unknown }).app, 'baseCachePath', {
+        get: () => cacheBase,
+        configurable: true
+      })
+    } catch (error) {
+      this.deps.log.warn('updater', `Could not relocate update cache: ${String(error)}`)
     }
   }
 
