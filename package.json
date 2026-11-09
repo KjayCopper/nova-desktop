@@ -1,7 +1,7 @@
 {
   "name": "nova-desktop",
   "productName": "Nova",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Nova FM — a self-updating broadcast playout console built with Electron, React and TypeScript.",
   "author": "Nova",
   "license": "MIT",

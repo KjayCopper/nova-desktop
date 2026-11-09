@@ -3414,3 +3414,27 @@ h1 {
   .console-grid { grid-template-columns: 1fr; }
   .console-panel[data-span="3"] { grid-column: span 1; }
 }
+/* ==========================================================================
+   Console: sticky players bar at bottom
+   ========================================================================== */
+.console-players {
+  flex: 0 0 auto;
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  padding: 6px 8px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-deep);
+  backdrop-filter: blur(6px);
+}
+.player-rack-horizontal {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  align-items: stretch;
+  width: 100%;
+  min-height: 0;
+}
+.player-rack-horizontal > .player-deck { flex: 2 1 0; min-width: 260px; }
+.player-rack-horizontal > .mini-deck { flex: 1 1 0; min-width: 150px; }
+.console-main { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
