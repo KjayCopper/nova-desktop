@@ -59,6 +59,13 @@ npm run dist       # NSIS installer → release/Nova-Setup-<version>.exe
 npm run dist:dir   # unpacked app only → release/win-unpacked/Nova.exe
 ```
 
+### Install location
+
+The NSIS installer defaults to **`D:\Nova`** instead of `%LOCALAPPDATA%\Programs\Nova`, so the
+app does not land on the system drive. The assisted installer still shows the directory page,
+so the folder can be changed during setup. Auto-updates reuse the folder recorded at install
+time (see `build/installer.nsh`).
+
 ---
 
 ## Project structure
@@ -225,8 +232,8 @@ npx electron-builder --win --publish always --config.publish.channel=beta
 The release should contain:
 
 ```
-Nova-Setup-0.1.1.exe
-Nova-Setup-0.1.1.exe.blockmap
+Nova-Setup-0.1.2.exe
+Nova-Setup-0.1.2.exe.blockmap
 latest.yml          # stable
 ```
 
