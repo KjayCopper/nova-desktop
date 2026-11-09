@@ -55,6 +55,24 @@ jobs:
       - name: Build application
         run: npm run build
 
+      # electron-builder uploads artifacts in parallel and can create two
+      # releases for the same tag when the release does not exist yet.
+      # Creating it first makes every upload target a single release.
+      - name: Create release
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $tag = "${{ github.ref_name }}"
+          gh release view $tag 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            $prerelease = "${{ steps.channel.outputs.prerelease }}"
+            $args = @($tag, '--title', $tag, '--notes', "Release $tag")
+            if ($prerelease -eq 'true') { $args += '--prerelease' }
+            gh release create @args --verify-tag
+          }
+
       - name: Publish GitHub release
         run: npx electron-builder --win --publish always --config.publish.channel=${{ steps.channel.outputs.channel }}
         env:
