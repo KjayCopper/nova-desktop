@@ -71,19 +71,6 @@ function TypeBadge({ type }: { type: PlayType }) {
   )
 }
 
-function VUMeter({ live }: { live: boolean }) {
-  return (
-    <div className="vu-meter" data-live={live} aria-hidden="true">
-      {Array.from({ length: 14 }, (_, index) => (
-        <span
-          key={index}
-          style={{ animationDelay: `${(index % 7) * 90}ms`, animationDuration: `${650 + (index % 5) * 130}ms` }}
-        />
-      ))}
-    </div>
-  )
-}
-
 function DeckButton({ label, onClick, disabled, active, children }: { label: string; onClick: () => void; disabled?: boolean; active?: boolean; children: ReactNode }) {
   return (
     <button type="button" className="deck-btn" onClick={onClick} disabled={disabled} data-active={active} title={label} aria-label={label}>
@@ -177,29 +164,48 @@ function MiniDeck({ name, tag, item, detail, state, progress, onPlay, onStop, on
 }
 
 function PlayerRack({ playout }: { playout: PlayoutController }) {
-  const { currentIndex, next, cart, cartElapsedMs, preview, previewElapsedMs, transport } = playout
+  const { currentIndex, next, cart, cartElapsedMs, preview, previewElapsedMs } = playout
   const previewProgress = progressOf(previewElapsedMs, preview?.item.duration ?? 0)
   return (
-    <aside className="player-rack">
-      <header className="rack-head">
-        <div className="rack-head-title"><Radio size={14} /> On air</div>
-        <VUMeter live={playout.playing} />
-      </header>
+    <div className="player-rack player-rack-horizontal">
       <PlayerA playout={playout} />
-      <div className="deck-stack">
-        <MiniDeck name="Player 2" tag="Next" item={next ?? null} state="cued" progress={0} emptyLabel="End of log" onPlay={() => playout.jumpTo(currentIndex + 1)} detail={next ? `${next.artist} · starts ${new Date(playout.logStart + (playout.starts[currentIndex + 1] ?? 0)).toLocaleTimeString()}` : undefined} />
-        <MiniDeck name="Player 3" tag="Cart" item={cart?.item ?? null} state={cart ? 'playing' : 'idle'} progress={cart ? progressOf(cartElapsedMs, cart.item.duration) : 0} emptyLabel="Fire a quick key" onStop={cart ? playout.stopCart : undefined} detail={cart ? `${cart.item.artist} · Quick key ${cart.padId}` : undefined}>
-          {cart ? <span className="mini-badge">CART</span> : null}
-        </MiniDeck>
-        <MiniDeck name="Player 4" tag="Preview" item={preview?.item ?? null} state={preview ? (preview.startedAt ? 'playing' : 'cued') : 'idle'} progress={previewProgress} emptyLabel="Cue from the library" onPlay={preview ? (preview.startedAt ? playout.stopPreview : playout.playPreview) : undefined} onStop={preview?.startedAt ? playout.stopPreview : undefined} onClear={preview ? playout.clearPreview : undefined} detail={preview ? `${preview.item.artist}${preview.startedAt ? '' : ' · ready'}` : undefined}>
-          {preview && !preview.startedAt ? <span className="mini-badge">CUE</span> : null}
-        </MiniDeck>
-      </div>
-      <footer className="rack-foot">
-        <span className={`rack-live ${transport === 'playing' ? 'is-live' : ''}`}><span className="status-dot" /> PGM {transport === 'playing' ? 'LIVE' : transport.toUpperCase()}</span>
-        <span className="rack-foot-meta">48 kHz · Stereo</span>
-      </footer>
-    </aside>
+      <MiniDeck
+        name="Player 2"
+        tag="Next"
+        item={next ?? null}
+        state="cued"
+        progress={0}
+        emptyLabel="End of log"
+        onPlay={() => playout.jumpTo(currentIndex + 1)}
+        detail={next ? `${next.artist}` : undefined}
+      />
+      <MiniDeck
+        name="Player 3"
+        tag="Cart"
+        item={cart?.item ?? null}
+        state={cart ? 'playing' : 'idle'}
+        progress={cart ? progressOf(cartElapsedMs, cart.item.duration) : 0}
+        emptyLabel="Fire a quick key"
+        onStop={cart ? playout.stopCart : undefined}
+        detail={cart ? `${cart.item.artist}` : undefined}
+      >
+        {cart ? <span className="mini-badge">CART</span> : null}
+      </MiniDeck>
+      <MiniDeck
+        name="Player 4"
+        tag="Preview"
+        item={preview?.item ?? null}
+        state={preview ? (preview.startedAt ? 'playing' : 'cued') : 'idle'}
+        progress={previewProgress}
+        emptyLabel="Cue from the library"
+        onPlay={preview ? (preview.startedAt ? playout.stopPreview : playout.playPreview) : undefined}
+        onStop={preview?.startedAt ? playout.stopPreview : undefined}
+        onClear={preview ? playout.clearPreview : undefined}
+        detail={preview ? `${preview.item.artist}${preview.startedAt ? '' : ' · ready'}` : undefined}
+      >
+        {preview && !preview.startedAt ? <span className="mini-badge">CUE</span> : null}
+      </MiniDeck>
+    </div>
   )
 }
 
@@ -374,30 +380,26 @@ function MicrophonePanel() {
   const [duck, setDuck] = useState(true)
   const [duckDb, setDuckDb] = useState(-6)
   return (
-    <section className="panel microphone-panel">
-      <header className="panel-head">
-        <div className="panel-title"><Mic size={15} /><h2>Microphone</h2></div>
-      </header>
-      <div className="mic-body">
-        <button type="button" className={`mic-btn ${live ? 'is-live' : ''}`} onClick={() => setLive((v) => !v)} aria-pressed={live}>
-          {live ? <Mic size={16} /> : <MicOff size={16} />}
-          {live ? 'Mic live' : 'Mic off'}
-        </button>
+    <section className="microphone-panel microphone-panel-vertical">
+      <div className="mic-top">
         <label className="mic-duck">
           <input type="checkbox" checked={duck} onChange={(e) => setDuck(e.target.checked)} disabled={!live} />
-          <span>Duck music when live</span>
+          <span>Duck music</span>
         </label>
         <div className="mic-slider">
-          <label htmlFor="duck-db">Duck amount</label>
-          <input id="duck-db" type="range" min={-20} max={0} step={1} value={duckDb} onChange={(e) => setDuckDb(Number(e.target.value))} disabled={!live || !duck} />
+          <input type="range" min={-20} max={0} step={1} value={duckDb} onChange={(e) => setDuckDb(Number(e.target.value))} disabled={!live || !duck} />
           <span className="mono">{duckDb} dB</span>
         </div>
       </div>
+      <button type="button" className={`mic-btn mic-btn-big ${live ? 'is-live' : ''}`} onClick={() => setLive((v) => !v)} aria-pressed={live}>
+        {live ? <Mic size={20} /> : <MicOff size={20} />}
+        {live ? 'Mic live' : 'Mic off'}
+      </button>
     </section>
   )
 }
 
-const DEFAULT_LAYOUT = ['library', 'controls', 'playlist', 'players', 'quickkeys', 'microphone']
+const DEFAULT_LAYOUT = ['library', 'controls', 'playlist', 'quickkeys']
 const LAYOUT_KEY = 'nova.console.layout'
 
 function readLayout(): string[] {
@@ -415,9 +417,7 @@ const PANEL_META: Record<string, { title: string; span: number }> = {
   library: { title: 'Library', span: 1 },
   controls: { title: 'Controls', span: 1 },
   playlist: { title: 'Playlist', span: 1 },
-  players: { title: 'Players', span: 3 },
-  quickkeys: { title: 'Quick keys', span: 3 },
-  microphone: { title: 'Microphone', span: 3 }
+  quickkeys: { title: 'Quick keys', span: 3 }
 }
 
 export function ConsolePage({ playout, actions }: { playout: PlayoutController; actions: AppActions }) {
@@ -455,9 +455,7 @@ export function ConsolePage({ playout, actions }: { playout: PlayoutController; 
       case 'library': return <LibraryPanel playout={playout} actions={actions} />
       case 'controls': return <ControlsPanel playout={playout} actions={actions} />
       case 'playlist': return <PlaylistPanel playout={playout} query={query} onQuery={setQuery} />
-      case 'players': return <PlayerRack playout={playout} />
       case 'quickkeys': return <QuickKeyRack playout={playout} />
-      case 'microphone': return <MicrophonePanel />
       default: return null
     }
   }
@@ -488,6 +486,11 @@ export function ConsolePage({ playout, actions }: { playout: PlayoutController; 
             )
           })}
         </div>
+      </div>
+
+      <div className="console-players">
+        <PlayerRack playout={playout} />
+        <MicrophonePanel />
       </div>
 
       <footer className="console-status">

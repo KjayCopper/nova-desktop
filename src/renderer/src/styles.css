@@ -3414,3 +3414,117 @@ h1 {
   .console-grid { grid-template-columns: 1fr; }
   .console-panel[data-span="3"] { grid-column: span 1; }
 }
+/* ==========================================================================
+   Console: sticky players bar at bottom
+   ========================================================================== */
+.console-players {
+  flex: 0 0 auto;
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  padding: 6px 8px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-deep);
+  backdrop-filter: blur(6px);
+}
+.player-rack-horizontal {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  align-items: stretch;
+  width: 100%;
+  min-height: 0;
+}
+.player-rack-horizontal > .player-deck { flex: 2 1 0; min-width: 260px; }
+.player-rack-horizontal > .mini-deck { flex: 1 1 0; min-width: 150px; }
+.console-main { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+/* ==========================================================================
+   Console: microphone in players bar
+   ========================================================================== */
+.console-players { display: flex; gap: 6px; align-items: stretch; }
+.microphone-panel-horizontal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 0;
+  min-width: 220px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.mic-btn-big { height: 36px; padding: 0 14px; font-size: 12px; }
+.microphone-panel-horizontal .mic-duck { flex: 0 0 auto; }
+.microphone-panel-horizontal .mic-slider { flex: 1 1 auto; min-width: 120px; }
+/* ==========================================================================
+   Console: microphone vertical layout in players bar
+   ========================================================================== */
+.microphone-panel-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 0;
+  min-width: 220px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.microphone-panel-vertical .mic-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.microphone-panel-vertical .mic-duck { flex: 0 0 auto; }
+.microphone-panel-vertical .mic-slider { flex: 1 1 auto; min-width: 100px; display: flex; align-items: center; gap: 6px; }
+.microphone-panel-vertical .mic-btn-big { width: 100%; height: 32px; justify-content: center; }
+/* ==========================================================================
+   Console: equal-size players + microphone bar (compact)
+   ========================================================================== */
+.console-players {
+  height: 118px;
+  padding: 4px 6px;
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+.player-rack-horizontal {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+}
+.player-rack-horizontal > .player-deck,
+.player-rack-horizontal > .mini-deck,
+.console-players > .microphone-panel-vertical {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+}
+.microphone-panel-vertical {
+  height: 100%;
+  padding: 4px 8px;
+  gap: 4px;
+}
+.microphone-panel-vertical .mic-top {
+  flex: 0 0 auto;
+  height: 22px;
+}
+.microphone-panel-vertical .mic-btn-big {
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+  justify-content: center;
+}
+.microphone-panel-vertical .mic-slider {
+  min-width: 0;
+  overflow: hidden;
+}
+.microphone-panel-vertical .mic-slider input[type="range"] {
+  width: 100%;
+  min-width: 0;
+}
