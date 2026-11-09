@@ -18,7 +18,12 @@
 ; File removal: preserve data\ on update, wipe everything on real uninstall.
 !macro customRemoveFiles
   ${If} ${isUpdated}
-    ; Update: keep $INSTDIR (and its data\ folder) in place.
+    ; Update: wipe the old app files but preserve the data\ folder.
+    SetOutPath $TEMP
+    Rename "$INSTDIR\data" "$PLUGINSDIR\data-backup"
+    RMDir /r $INSTDIR
+    CreateDirectory $INSTDIR
+    Rename "$PLUGINSDIR\data-backup" "$INSTDIR\data"
   ${Else}
     ; Real uninstall: remove everything, including the data folder.
     SetOutPath $TEMP
