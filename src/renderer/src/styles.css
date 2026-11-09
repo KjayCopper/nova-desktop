@@ -3438,3 +3438,21 @@ h1 {
 .player-rack-horizontal > .player-deck { flex: 2 1 0; min-width: 260px; }
 .player-rack-horizontal > .mini-deck { flex: 1 1 0; min-width: 150px; }
 .console-main { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+/* ==========================================================================
+   Console: microphone in players bar
+   ========================================================================== */
+.console-players { display: flex; gap: 6px; align-items: stretch; }
+.microphone-panel-horizontal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 0;
+  min-width: 220px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.mic-btn-big { height: 36px; padding: 0 14px; font-size: 12px; }
+.microphone-panel-horizontal .mic-duck { flex: 0 0 auto; }
+.microphone-panel-horizontal .mic-slider { flex: 1 1 auto; min-width: 120px; }

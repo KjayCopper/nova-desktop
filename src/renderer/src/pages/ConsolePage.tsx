@@ -380,30 +380,24 @@ function MicrophonePanel() {
   const [duck, setDuck] = useState(true)
   const [duckDb, setDuckDb] = useState(-6)
   return (
-    <section className="panel microphone-panel">
-      <header className="panel-head">
-        <div className="panel-title"><Mic size={15} /><h2>Microphone</h2></div>
-      </header>
-      <div className="mic-body">
-        <button type="button" className={`mic-btn ${live ? 'is-live' : ''}`} onClick={() => setLive((v) => !v)} aria-pressed={live}>
-          {live ? <Mic size={16} /> : <MicOff size={16} />}
-          {live ? 'Mic live' : 'Mic off'}
-        </button>
-        <label className="mic-duck">
-          <input type="checkbox" checked={duck} onChange={(e) => setDuck(e.target.checked)} disabled={!live} />
-          <span>Duck music when live</span>
-        </label>
-        <div className="mic-slider">
-          <label htmlFor="duck-db">Duck amount</label>
-          <input id="duck-db" type="range" min={-20} max={0} step={1} value={duckDb} onChange={(e) => setDuckDb(Number(e.target.value))} disabled={!live || !duck} />
-          <span className="mono">{duckDb} dB</span>
-        </div>
+    <section className="microphone-panel microphone-panel-horizontal">
+      <button type="button" className={`mic-btn mic-btn-big ${live ? 'is-live' : ''}`} onClick={() => setLive((v) => !v)} aria-pressed={live}>
+        {live ? <Mic size={20} /> : <MicOff size={20} />}
+        {live ? 'Mic live' : 'Mic off'}
+      </button>
+      <label className="mic-duck">
+        <input type="checkbox" checked={duck} onChange={(e) => setDuck(e.target.checked)} disabled={!live} />
+        <span>Duck music</span>
+      </label>
+      <div className="mic-slider">
+        <input type="range" min={-20} max={0} step={1} value={duckDb} onChange={(e) => setDuckDb(Number(e.target.value))} disabled={!live || !duck} />
+        <span className="mono">{duckDb} dB</span>
       </div>
     </section>
   )
 }
 
-const DEFAULT_LAYOUT = ['library', 'controls', 'playlist', 'quickkeys', 'microphone']
+const DEFAULT_LAYOUT = ['library', 'controls', 'playlist', 'quickkeys']
 const LAYOUT_KEY = 'nova.console.layout'
 
 function readLayout(): string[] {
@@ -421,8 +415,7 @@ const PANEL_META: Record<string, { title: string; span: number }> = {
   library: { title: 'Library', span: 1 },
   controls: { title: 'Controls', span: 1 },
   playlist: { title: 'Playlist', span: 1 },
-  quickkeys: { title: 'Quick keys', span: 3 },
-  microphone: { title: 'Microphone', span: 3 }
+  quickkeys: { title: 'Quick keys', span: 3 }
 }
 
 export function ConsolePage({ playout, actions }: { playout: PlayoutController; actions: AppActions }) {
@@ -461,7 +454,6 @@ export function ConsolePage({ playout, actions }: { playout: PlayoutController; 
       case 'controls': return <ControlsPanel playout={playout} actions={actions} />
       case 'playlist': return <PlaylistPanel playout={playout} query={query} onQuery={setQuery} />
       case 'quickkeys': return <QuickKeyRack playout={playout} />
-      case 'microphone': return <MicrophonePanel />
       default: return null
     }
   }
@@ -496,6 +488,7 @@ export function ConsolePage({ playout, actions }: { playout: PlayoutController; 
 
       <div className="console-players">
         <PlayerRack playout={playout} />
+        <MicrophonePanel />
       </div>
 
       <footer className="console-status">
