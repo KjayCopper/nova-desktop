@@ -140,7 +140,7 @@ export class UpdaterService {
       'updater',
       `Installing ${this.state.latestVersion ?? 'update'} and restarting the application.`
     )
-    setImmediate(() => autoUpdater.quitAndInstall(false, true))
+    setImmediate(() => autoUpdater.quitAndInstall(true, true))
     return { simulated: false }
   }
 
