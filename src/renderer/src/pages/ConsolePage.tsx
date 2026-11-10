@@ -402,11 +402,11 @@ function MicrophonePanel() {
     <section className="microphone-panel microphone-panel-vertical">
       <div className="mic-top">
         <label className="mic-duck">
-          <input type="checkbox" checked={duck} onChange={(e) => setDuck(e.target.checked)} disabled={!live} />
+          <input type="checkbox" checked={duck} onChange={(e) => setDuck(e.target.checked)} />
           <span>Duck music</span>
         </label>
         <div className="mic-slider">
-          <input type="range" min={-20} max={0} step={1} value={duckDb} onChange={(e) => setDuckDb(Number(e.target.value))} disabled={!live || !duck} />
+          <input type="range" min={-20} max={0} step={1} value={duckDb} onChange={(e) => setDuckDb(Number(e.target.value))} disabled={!duck} />
           <span className="mono">{duckDb} dB</span>
         </div>
       </div>
