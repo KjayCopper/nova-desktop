@@ -3528,7 +3528,38 @@ h1 {
 .console-panel-body > .library-panel,
 .console-panel-body > .controls-panel,
 .console-panel-body > .microphone-panel { border: 0; border-radius: 0; height: 100%; }
-/* react-resizable handles */
-.react-resizable-handle { position: absolute; width: 12px; height: 12px; background: transparent; }
-.react-resizable-handle::after { content: ''; position: absolute; right: 3px; bottom: 3px; width: 6px; height: 6px; border-right: 2px solid var(--dim); border-bottom: 2px solid var(--dim); }
-.react-resizable-handle:hover::after { border-color: var(--accent); }
+/* ==========================================================================
+   Console: resize handles (large, visible)
+   ========================================================================== */
+.react-grid-item { position: absolute; }
+.react-grid-item > .react-resizable-handle {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  bottom: 0;
+  right: 0;
+  cursor: se-resize;
+  z-index: 10;
+  background: transparent;
+}
+.react-grid-item > .react-resizable-handle::after {
+  content: '';
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
+  opacity: 0.85;
+}
+.react-grid-item > .react-resizable-handle:hover::after {
+  opacity: 1;
+  border-color: var(--accent-text);
+}
+.react-grid-item.react-grid-placeholder {
+  background: var(--accent-soft);
+  border: 1px dashed var(--accent);
+  border-radius: var(--radius-sm);
+  opacity: 0.4;
+}
