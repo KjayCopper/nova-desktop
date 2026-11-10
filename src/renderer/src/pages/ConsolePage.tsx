@@ -450,12 +450,16 @@ export function ConsolePage({ playout, actions }: { playout: PlayoutController; 
   const hourLabel = `${String(hour).padStart(2, '0')}:00 – ${String(nextHour).padStart(2, '0')}:00`
   const containerRef = useRef<HTMLDivElement>(null)
   const [width, setWidth] = useState(0)
+  const [maxRows, setMaxRows] = useState(20)
   const [layout, setLayout] = useState<any[]>(readLayout)
 
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
-    const update = () => setWidth(el.clientWidth)
+    const update = () => {
+      setWidth(el.clientWidth)
+      setMaxRows(Math.max(4, Math.floor(el.clientHeight / 30)))
+    }
     update()
     const ro = new ResizeObserver(update)
     ro.observe(el)
@@ -495,9 +499,10 @@ export function ConsolePage({ playout, actions }: { playout: PlayoutController; 
           width={width}
           cols={12}
           rowHeight={30}
+          maxRows={maxRows}
           onLayoutChange={onLayoutChange}
           draggableHandle=".console-panel-head"
-          resizeHandles={['se', 'sw', 'ne', 'nw', 'n', 's', 'e', 'w']}
+          resizeHandles={['n', 's', 'e', 'w']}
           margin={[8, 8]}
           compactType={null}
           isBounded={true}
