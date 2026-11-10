@@ -20,11 +20,11 @@ import {
   Wand2,
   X
 } from 'lucide-react'
-import ReactGridLayout, { WidthProvider } from 'react-grid-layout/legacy'
+import ReactGridLayout from 'react-grid-layout/legacy'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 
-const GridLayout = WidthProvider(ReactGridLayout)
+const GridLayout = ReactGridLayout
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { PlayoutController } from '../hooks/usePlayout'
 import { useNow } from '../hooks/useNow'
@@ -448,7 +448,19 @@ export function ConsolePage({ playout, actions }: { playout: PlayoutController; 
   const hour = new Date(now).getHours()
   const nextHour = (hour + 1) % 24
   const hourLabel = `${String(hour).padStart(2, '0')}:00 – ${String(nextHour).padStart(2, '0')}:00`
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [width, setWidth] = useState(0)
   const [layout, setLayout] = useState<any[]>(readLayout)
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const update = () => setWidth(el.clientWidth)
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   const onLayoutChange = (newLayout: any) => {
     setLayout(newLayout)
@@ -474,14 +486,17 @@ export function ConsolePage({ playout, actions }: { playout: PlayoutController; 
 
   return (
     <div className="console-page">
-      <div className="console-main">
+      <div className="console-main" ref={containerRef}>
+        {width > 0 ? (
         <GridLayout
           className="console-grid-layout"
+          style={{ width }}
           layout={layout}
+          width={width}
           cols={12}
           rowHeight={30}
           onLayoutChange={onLayoutChange}
-          draggableHandle=".console-panel-grip"
+          draggableHandle=".console-panel-head"
           resizeHandles={['se', 'sw', 'ne', 'nw', 'n', 's', 'e', 'w']}
           margin={[8, 8]}
           compactType={null}
@@ -498,6 +513,7 @@ export function ConsolePage({ playout, actions }: { playout: PlayoutController; 
             </div>
           ))}
         </GridLayout>
+        ) : null}
       </div>
 
       <div className="console-players">
