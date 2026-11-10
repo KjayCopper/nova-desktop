@@ -3529,34 +3529,77 @@ h1 {
 .console-panel-body > .controls-panel,
 .console-panel-body > .microphone-panel { border: 0; border-radius: 0; height: 100%; }
 /* ==========================================================================
-   Console: resize handles (large, visible)
+   Console: resize handles on all edges
    ========================================================================== */
 .react-grid-item { position: absolute; }
 .react-grid-item > .react-resizable-handle {
   position: absolute;
-  width: 22px;
-  height: 22px;
-  bottom: 0;
-  right: 0;
-  cursor: se-resize;
   z-index: 10;
   background: transparent;
 }
-.react-grid-item > .react-resizable-handle::after {
+.react-grid-item > .react-resizable-handle-se,
+.react-grid-item > .react-resizable-handle-sw,
+.react-grid-item > .react-resizable-handle-ne,
+.react-grid-item > .react-resizable-handle-nw {
+  width: 16px;
+  height: 16px;
+}
+.react-grid-item > .react-resizable-handle-n,
+.react-grid-item > .react-resizable-handle-s {
+  width: 100%;
+  height: 8px;
+  left: 0;
+}
+.react-grid-item > .react-resizable-handle-e,
+.react-grid-item > .react-resizable-handle-w {
+  width: 8px;
+  height: 100%;
+  top: 0;
+}
+.react-grid-item > .react-resizable-handle-se::after,
+.react-grid-item > .react-resizable-handle-nw::after,
+.react-grid-item > .react-resizable-handle-ne::after,
+.react-grid-item > .react-resizable-handle-sw::after {
   content: '';
   position: absolute;
-  right: 4px;
-  bottom: 4px;
-  width: 10px;
-  height: 10px;
-  border-right: 2px solid var(--accent);
-  border-bottom: 2px solid var(--accent);
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--accent);
   opacity: 0.85;
 }
-.react-grid-item > .react-resizable-handle:hover::after {
-  opacity: 1;
-  border-color: var(--accent-text);
+.react-grid-item > .react-resizable-handle-se::after { right: 3px; bottom: 3px; border-top: 0; border-left: 0; }
+.react-grid-item > .react-resizable-handle-nw::after { left: 3px; top: 3px; border-bottom: 0; border-right: 0; }
+.react-grid-item > .react-resizable-handle-ne::after { right: 3px; top: 3px; border-bottom: 0; border-left: 0; }
+.react-grid-item > .react-resizable-handle-sw::after { left: 3px; bottom: 3px; border-top: 0; border-right: 0; }
+.react-grid-item > .react-resizable-handle-n::after,
+.react-grid-item > .react-resizable-handle-s::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 3px;
+  background: var(--accent);
+  opacity: 0.5;
+  border-radius: 2px;
 }
+.react-grid-item > .react-resizable-handle-n::after { top: 2px; }
+.react-grid-item > .react-resizable-handle-s::after { bottom: 2px; }
+.react-grid-item > .react-resizable-handle-e::after,
+.react-grid-item > .react-resizable-handle-w::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 24px;
+  background: var(--accent);
+  opacity: 0.5;
+  border-radius: 2px;
+}
+.react-grid-item > .react-resizable-handle-e::after { right: 2px; }
+.react-grid-item > .react-resizable-handle-w::after { left: 2px; }
+.react-grid-item > .react-resizable-handle:hover::after { opacity: 1; }
 .react-grid-item.react-grid-placeholder {
   background: var(--accent-soft);
   border: 1px dashed var(--accent);

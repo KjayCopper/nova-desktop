@@ -20,9 +20,11 @@ import {
   Wand2,
   X
 } from 'lucide-react'
-import ReactGridLayout from 'react-grid-layout'
+import ReactGridLayout, { WidthProvider } from 'react-grid-layout/legacy'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
+
+const GridLayout = WidthProvider(ReactGridLayout)
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { PlayoutController } from '../hooks/usePlayout'
 import { useNow } from '../hooks/useNow'
@@ -36,10 +38,6 @@ import {
   type PlaylistItem,
   type QuickKey
 } from '../lib/playout-data'
-
-const GridLayout = (ReactGridLayout as any).WidthProvider
-  ? (ReactGridLayout as any).WidthProvider(ReactGridLayout)
-  : ReactGridLayout
 
 function progressOf(elapsedMs: number, durationSeconds: number): number {
   return Math.min(1, Math.max(0, elapsedMs / Math.max(1, durationSeconds * 1000)))
@@ -452,7 +450,7 @@ export function ConsolePage({ playout, actions }: { playout: PlayoutController; 
   const hourLabel = `${String(hour).padStart(2, '0')}:00 – ${String(nextHour).padStart(2, '0')}:00`
   const [layout, setLayout] = useState<any[]>(readLayout)
 
-  const onLayoutChange = (newLayout: any[]) => {
+  const onLayoutChange = (newLayout: any) => {
     setLayout(newLayout)
     try { localStorage.setItem(LAYOUT_KEY, JSON.stringify(newLayout)) } catch {}
   }
@@ -486,6 +484,8 @@ export function ConsolePage({ playout, actions }: { playout: PlayoutController; 
           draggableHandle=".console-panel-grip"
           resizeHandles={['se', 'sw', 'ne', 'nw', 'n', 's', 'e', 'w']}
           margin={[8, 8]}
+          compactType={null}
+          isBounded={true}
         >
           {layout.map((item) => (
             <div key={item.i} className="console-panel">
