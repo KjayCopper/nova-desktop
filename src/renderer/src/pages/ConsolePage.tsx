@@ -264,9 +264,12 @@ function QuickKeyRack({ playout }: { playout: PlayoutController }) {
   useEffect(() => {
     if (!menu) return
     const close = () => setMenu(null)
-    window.addEventListener('click', close)
-    window.addEventListener('contextmenu', close)
+    const timer = setTimeout(() => {
+      window.addEventListener('click', close)
+      window.addEventListener('contextmenu', close)
+    }, 0)
     return () => {
+      clearTimeout(timer)
       window.removeEventListener('click', close)
       window.removeEventListener('contextmenu', close)
     }
