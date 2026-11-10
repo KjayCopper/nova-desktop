@@ -30,7 +30,8 @@ import {
   TRACKS,
   TYPE_LABEL,
   type PlayType,
-  type PlaylistItem
+  type PlaylistItem,
+  type QuickKey
 } from '../lib/playout-data'
 
 function progressOf(elapsedMs: number, durationSeconds: number): number {
@@ -258,6 +259,19 @@ function PlaylistPanel({ playout, query, onQuery }: { playout: PlayoutController
 function QuickKeyRack({ playout }: { playout: PlayoutController }) {
   const { cart, cartElapsedMs, activeQuickKeyId, triggerQuickKey, stopCart } = playout
   const pads = QUICK_KEYS.slice(0, 24)
+  const [menu, setMenu] = useState<{ x: number; y: number; pad: QuickKey } | null>(null)
+
+  useEffect(() => {
+    if (!menu) return
+    const close = () => setMenu(null)
+    window.addEventListener('click', close)
+    window.addEventListener('contextmenu', close)
+    return () => {
+      window.removeEventListener('click', close)
+      window.removeEventListener('contextmenu', close)
+    }
+  }, [menu])
+
   return (
     <section className="quickkey-rack">
       <header className="rack-bar">
@@ -272,7 +286,7 @@ function QuickKeyRack({ playout }: { playout: PlayoutController }) {
           const active = activeQuickKeyId === pad.id
           const progress = active ? progressOf(cartElapsedMs, pad.duration) : 0
           return (
-            <button key={pad.id} type="button" className={`quickkey type-${pad.type}`} data-active={active} onClick={() => triggerQuickKey(pad)} onContextMenu={(e) => { e.preventDefault(); if (active) stopCart() }} title={`${pad.label} – ${pad.detail} (${pad.duration}s)`}>
+            <button key={pad.id} type="button" className={`quickkey type-${pad.type}`} data-active={active} onClick={() => { if (active) stopCart(); else triggerQuickKey(pad) }} onContextMenu={(e) => { e.preventDefault(); setMenu({ x: e.clientX, y: e.clientY, pad }) }} title={`${pad.label} – ${pad.detail} (${pad.duration}s)`}>
               {active ? <span className="qk-progress" style={{ width: `${progress * 100}%` }} /> : null}
               <span className="qk-top"><span className="qk-id mono">{pad.id}</span><span className="qk-duration mono">{pad.duration}s</span></span>
               <span className="qk-label">{pad.label}</span>
@@ -281,6 +295,22 @@ function QuickKeyRack({ playout }: { playout: PlayoutController }) {
           )
         })}
       </div>
+
+      {menu ? (
+        <div
+          className="qk-context-menu"
+          style={{ left: menu.x, top: menu.y }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {menu.pad.id === activeQuickKeyId ? (
+            <button type="button" onClick={() => { stopCart(); setMenu(null) }}>Stop</button>
+          ) : (
+            <button type="button" onClick={() => { triggerQuickKey(menu.pad); setMenu(null) }}>Play</button>
+          )}
+          <button type="button" onClick={() => setMenu(null)}>Edit key…</button>
+          <button type="button" onClick={() => setMenu(null)}>Remove key</button>
+        </div>
+      ) : null}
     </section>
   )
 }
