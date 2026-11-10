@@ -3579,7 +3579,8 @@ h1 {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  width: 40px;`n  height: 4px;
+  width: 40px;
+  height: 4px;
   background: var(--accent);
   opacity: 0.5;
   border-radius: 2px;
@@ -3592,7 +3593,8 @@ h1 {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 4px;`n  height: 40px;
+  width: 4px;
+  height: 40px;
   background: var(--accent);
   opacity: 0.5;
   border-radius: 2px;
