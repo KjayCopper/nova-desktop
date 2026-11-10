@@ -64,8 +64,8 @@ export function usePlayout(): PlayoutController {
   const [log, setLog] = useState<PlaylistItem[]>(INITIAL.items)
   const [logStart, setLogStart] = useState<number>(INITIAL.logStart)
   const [playhead, setPlayhead] = useState<number>(() => Date.now() - INITIAL.logStart)
-  const [transport, setTransport] = useState<TransportState>('playing')
-  const [autoDj, setAutoDjState] = useState(true)
+  const [transport, setTransport] = useState<TransportState>('stopped')
+  const [autoDj, setAutoDjState] = useState(false)
   const [cart, setCart] = useState<ActiveCart | null>(null)
   const [preview, setPreview] = useState<PreviewState | null>(null)
 
