@@ -20,6 +20,9 @@ import {
   Wand2,
   X
 } from 'lucide-react'
+import ReactGridLayout from 'react-grid-layout'
+import 'react-grid-layout/css/styles.css'
+import 'react-resizable/css/styles.css'
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { PlayoutController } from '../hooks/usePlayout'
 import { useNow } from '../hooks/useNow'
@@ -33,6 +36,10 @@ import {
   type PlaylistItem,
   type QuickKey
 } from '../lib/playout-data'
+
+const GridLayout = (ReactGridLayout as any).WidthProvider
+  ? (ReactGridLayout as any).WidthProvider(ReactGridLayout)
+  : ReactGridLayout
 
 function progressOf(elapsedMs: number, durationSeconds: number): number {
   return Math.min(1, Math.max(0, elapsedMs / Math.max(1, durationSeconds * 1000)))
@@ -418,25 +425,23 @@ function MicrophonePanel() {
   )
 }
 
-const DEFAULT_LAYOUT = ['library', 'controls', 'playlist', 'quickkeys']
+const DEFAULT_LAYOUT = [
+  { i: 'library', x: 0, y: 0, w: 3, h: 12, minW: 2, minH: 6 },
+  { i: 'controls', x: 3, y: 0, w: 2, h: 6, minW: 2, minH: 4 },
+  { i: 'playlist', x: 5, y: 0, w: 7, h: 12, minW: 3, minH: 6 },
+  { i: 'quickkeys', x: 0, y: 12, w: 12, h: 8, minW: 4, minH: 4 }
+]
 const LAYOUT_KEY = 'nova.console.layout'
 
-function readLayout(): string[] {
+function readLayout(): any[] {
   try {
     const raw = localStorage.getItem(LAYOUT_KEY)
     if (raw) {
       const parsed = JSON.parse(raw)
-      if (Array.isArray(parsed) && parsed.length === DEFAULT_LAYOUT.length) return parsed
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed
     }
   } catch {}
-  return [...DEFAULT_LAYOUT]
-}
-
-const PANEL_META: Record<string, { title: string; span: number }> = {
-  library: { title: 'Library', span: 1 },
-  controls: { title: 'Controls', span: 1 },
-  playlist: { title: 'Playlist', span: 1 },
-  quickkeys: { title: 'Quick keys', span: 3 }
+  return DEFAULT_LAYOUT.map((l) => ({ ...l }))
 }
 
 export function ConsolePage({ playout, actions }: { playout: PlayoutController; actions: AppActions }) {
@@ -445,29 +450,12 @@ export function ConsolePage({ playout, actions }: { playout: PlayoutController; 
   const hour = new Date(now).getHours()
   const nextHour = (hour + 1) % 24
   const hourLabel = `${String(hour).padStart(2, '0')}:00 – ${String(nextHour).padStart(2, '0')}:00`
-  const [layout, setLayout] = useState<string[]>(readLayout)
-  const dragId = useRef<string | null>(null)
+  const [layout, setLayout] = useState<any[]>(readLayout)
 
-  const saveLayout = (next: string[]) => {
-    setLayout(next)
-    try { localStorage.setItem(LAYOUT_KEY, JSON.stringify(next)) } catch {}
+  const onLayoutChange = (newLayout: any[]) => {
+    setLayout(newLayout)
+    try { localStorage.setItem(LAYOUT_KEY, JSON.stringify(newLayout)) } catch {}
   }
-
-  const onDragStart = (id: string) => { dragId.current = id }
-  const onDragOver = (e: React.DragEvent, id: string) => {
-    e.preventDefault()
-    const from = dragId.current
-    if (!from || from === id) return
-    const fromIdx = layout.indexOf(from)
-    const toIdx = layout.indexOf(id)
-    if (fromIdx < 0 || toIdx < 0) return
-    const next = [...layout]
-    next.splice(fromIdx, 1)
-    next.splice(toIdx, 0, from)
-    saveLayout(next)
-    dragId.current = from
-  }
-  const onDragEnd = () => { dragId.current = null }
 
   const renderPanel = (id: string) => {
     switch (id) {
@@ -479,32 +467,37 @@ export function ConsolePage({ playout, actions }: { playout: PlayoutController; 
     }
   }
 
+  const PANEL_TITLE: Record<string, string> = {
+    library: 'Library',
+    controls: 'Controls',
+    playlist: 'Playlist',
+    quickkeys: 'Quick keys'
+  }
+
   return (
     <div className="console-page">
       <div className="console-main">
-        <div className="console-grid">
-          {layout.map((id) => {
-            const meta = PANEL_META[id]
-            return (
-              <div
-                key={id}
-                className="console-panel"
-                data-span={meta.span}
-                draggable
-                onDragStart={() => onDragStart(id)}
-                onDragOver={(e) => onDragOver(e, id)}
-                onDragEnd={onDragEnd}
-              >
-                <header className="console-panel-head">
-                  <span className="console-panel-grip" aria-hidden="true"><GripVertical size={13} /></span>
-                  <span className="console-panel-title">{meta.title}</span>
-                  <span className="console-panel-hint">drag to move</span>
-                </header>
-                <div className="console-panel-body">{renderPanel(id)}</div>
-              </div>
-            )
-          })}
-        </div>
+        <GridLayout
+          className="console-grid-layout"
+          layout={layout}
+          cols={12}
+          rowHeight={30}
+          onLayoutChange={onLayoutChange}
+          draggableHandle=".console-panel-grip"
+          resizeHandles={['se', 'sw', 'ne', 'nw', 'n', 's', 'e', 'w']}
+          margin={[8, 8]}
+        >
+          {layout.map((item) => (
+            <div key={item.i} className="console-panel">
+              <header className="console-panel-head">
+                <span className="console-panel-grip" aria-hidden="true"><GripVertical size={13} /></span>
+                <span className="console-panel-title">{PANEL_TITLE[item.i] ?? item.i}</span>
+                <span className="console-panel-hint">drag · resize</span>
+              </header>
+              <div className="console-panel-body">{renderPanel(item.i)}</div>
+            </div>
+          ))}
+        </GridLayout>
       </div>
 
       <div className="console-players">
@@ -524,7 +517,7 @@ export function ConsolePage({ playout, actions }: { playout: PlayoutController; 
         <button
           type="button"
           className="tool-btn tool-btn-sm"
-          onClick={() => saveLayout([...DEFAULT_LAYOUT])}
+          onClick={() => { setLayout(DEFAULT_LAYOUT.map((l) => ({ ...l }))); try { localStorage.removeItem(LAYOUT_KEY) } catch {} }}
           title="Reset the console layout to the starter arrangement"
         >
           Reset layout
